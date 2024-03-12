@@ -1,45 +1,24 @@
-// const argKey = (x) => x.toString() + ":" + typeof x;
+const memo = (fn) => {
+  const cache = {};
 
-// const generateKey = (args) => args.map(argKey).join("|");
-
-const memoize = (fn, length) => {
-  const cache = new Map();
-
-  return (...args) => {
+  return function (...args) {
     const key = JSON.stringify(args);
+    if (cache[key]) {
+      return cache[key];
+    } else {
+      const result = fn(...args);
 
-    console.log(`${fn.name}(${key}) call`);
+      cache[key] = result;
 
-    if (cache.has(key)) return cache.get(key);
-
-    console.log(`max(${key}) calculate`);
-
-    const res = fn(...args);
-
-    if (cache.size >= length) {
-      const firstKey = cache.keys().next().value;
-
-      console.log("Delete key:", firstKey);
-
-      cache.delete(firstKey);
+      return result;
     }
-
-    cache.set(key, res);
-
-    return res;
   };
 };
 
-const max = (a, b) => (a > b ? a : b);
+const hardSum = (a, b) => a + b;
 
-const mMax = memoize(max, 3);
-
-mMax(10, 8);
-mMax(10, 8);
-mMax(1, 15);
-mMax(12, 3);
-mMax(15, 2);
-mMax(1, 15);
-mMax(10, 8);
-mMax(0, 0);
-mMax(0, 0);
+const f = memo(hardSum);
+console.log(f(1, 2));
+console.log(f(1, 2));
+console.log(f(3, 4));
+console.log(f(3, 4));
